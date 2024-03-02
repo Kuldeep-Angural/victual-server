@@ -59,6 +59,7 @@ const loginSchema = new Schema({
     default: Date.now,
   },
 });
+
 module.exports = {
   register: mongoose.model("register", registerSchema),
   login: mongoose.model("login", loginSchema),

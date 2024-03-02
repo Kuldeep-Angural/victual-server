@@ -1,6 +1,6 @@
-const utils = require('../src/utils/utils');
+const utils = require('../utils/utils');
 const mongoose = require("mongoose");
-const schema = require('../src/Schema/schema');
+const schema = require('../Schema/schema');
 
 
 const loginWithGoogle = async (req,res) => {
