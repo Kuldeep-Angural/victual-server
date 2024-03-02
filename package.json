@@ -1,0 +1,23 @@
+{
+  "name": "hawkers-backend",
+  "version": "1.0.0",
+  "description": "the hawkers online vegitable selling webapp",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "kuldeep kumar",
+  "license": "ISC",
+  "dependencies": {
+    "circular-json": "^0.5.9",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "express-jwt": "^8.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "4.1",
+    "mongoose": "^7.4.1",
+    "nodemon": "^3.1.0"
+  }
+}
