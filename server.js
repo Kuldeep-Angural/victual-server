@@ -14,6 +14,8 @@ config();
 DBCONNECTON();
 
 app.use(cors({ origin:process.env.CLIENT_URL,methods:"GET,POST,PUT,DELETE",credentials:true}));
+app.use('/test',(req,res)=>{
+  return res.json("hello);
 app.use('/api',auth);
 app.use('/api/user',userRouter);
 
