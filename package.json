@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "the hawkers online vegitable selling webapp",
   "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "nodemon server.js"
   },
