@@ -1,41 +1,61 @@
-const { accessDenied, accessDeniedNotValidToken, notAuthorized } = require("../constant/constant");
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import jwt from 'jsonwebtoken';
+import { accessDeniedNotValidToken, accessDenied, notAuthorized } from '../constants/message.js';
+import dotenv from 'dotenv';
+import { verifyRefreshToken } from '../service/authService.js';
+import userToken from '../model/userToken.js';
+dotenv.config();
 
-const authentication = async (req, res, next) => {
-    const token = req.header("x-access-token");
-    console.log(token);
+
+const DEFAULT_ERROR_MESSAGES = {
+    accessDenied: 'Access denied. Please log in again.',
+    accessDeniedNotValidToken: 'Invalid token. Please log in again.',
+    tokenExpired: 'Session expired. Please log in again.',
+};
+
+
+export const authentication = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message:accessDenied });
+    }
+
+    const token = authHeader.substring('Bearer '.length);
     if (!token) {
-        return res.status(403).json({
-            message: accessDenied
-        });
-    } else {
-        try {
-            const tokenDetails = jwt.verify(
-                token,
-                process.env.TOKEN_SECRET
-            );
-            console.log(tokenDetails);
-            req.user = tokenDetails;
-            next();
-        } catch (error) {
-            res.status(403).json({ message: accessDeniedNotValidToken });
+        return res.status(401).json({ message: accessDenied });
+    }
+
+    try {
+        const tokenDetails = jwt.verify(token, process.env.TOKEN_SECRET);
+        const dbUserToken = await userToken.findOne({ token: token });
+        
+        if (dbUserToken.userId.toString() !== tokenDetails._id) {
+            return res.status(403).json({ message: 'Session logged out' });
         }
+
+        req.user = tokenDetails;
+        const isTokenExpired = tokenDetails.exp * 1000 < Date.now();
+        if (isTokenExpired) {
+            return res.status(403).json({ message: DEFAULT_ERROR_MESSAGES.tokenExpired });
+        }
+
+        next();
+    } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(403).json({ message: DEFAULT_ERROR_MESSAGES.tokenExpired });
+        }
+        res.status(403).json({ message: accessDeniedNotValidToken });
     }
 };
 
-const checkRoles = (roles) => {
+export const checkRoles = () => {
     return (req, res, next) => {
-        roles.push("user");
-        if (req.user.roles.includes(...roles)) {
+        const user = req?.user;
+        console.log(user);
+        if (user && (user.roles[0]==='user' || user.roles[0] ==='owner')) {
             next();
         } else {
+            console.log(notAuthorized);
             res.status(403).json({ error: true, message: notAuthorized });
         }
     };
-};
-
-module.exports = {
-    checkRoles,
-    authentication
 };
