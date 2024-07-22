@@ -1,10 +1,9 @@
-import express from 'express'
+import express from 'express';
 import User from '../modal/User.js';
+import { generateRefreshToken, generateTokens } from '../service/authService.js';
 import { emailService } from '../service/emailService.js';
 import { veriFyOtp } from '../template/emailVerifyTemplate.js';
 import { convertToResponse, generateRandomNumber, getCurrentTime } from '../utils/utils.js';
-import { generateRefreshToken, generateTokens } from '../service/authService.js';
-import { someThingWentWrong } from '../constant/constant.js';
 const router = express.Router();
 
 export const decodeObject = (obj) => {
